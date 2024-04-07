@@ -11,4 +11,9 @@ public class MainController {
     public String hello() {
         return "Hello Spring Boot Board";
     }
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/question/list";
+    }
 }
