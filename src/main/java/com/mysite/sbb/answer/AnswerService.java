@@ -64,8 +64,8 @@ public class AnswerService {
         return this.answerRepository.findByQuestion(question, pageable);
     }
     public Page<Answer> getListSortedByVotes(Question question, int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "voter.size"));
-        return answerRepository.findByQuestion(question, pageable);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createDate"));
+        return answerRepository.findByQuestionSortedByVoterSize(question, pageable);
     }
 
     public Page<Answer> getListSortedByCreateDate(Question question, int page) {

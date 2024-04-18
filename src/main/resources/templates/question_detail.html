@@ -39,15 +39,15 @@
         th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
 
     <form>
-        <label for="sort">정렬 선택:</label>
-        <!-- onChangeSort 함수를 호출하여 콤보 상자가 변경될 때마다 페이지를 새로 고침 -->
-        <select name="sort" id="sort" onchange="onChangeSort()">
-            <option value="createDate">최신순</option>
-            <option value="votes">추천순</option>
-        </select>
-    </form>
+        <!-- <label for="sort">정렬 선택:</label> -->
 
-    <!-- 답변 반복 시작 -->
+        <select onchange="location.href=this.value;">
+            <option th:value="@{/question/detail/{id}(id=${question.id}, sort='createDate')}" th:selected="${sort == 'createDate'}">최신순</option>
+            <option th:value="@{/question/detail/{id}(id=${question.id}, sort='votes')}" th:selected="${sort == 'votes'}">추천순</option>
+        </select>
+     </form>
+
+     <!-- 답변 반복 시작 -->
     <div class="card my-3" th:each="answer : ${answerPaging}">
         <a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
@@ -150,8 +150,8 @@
 });
 
         function onChangeSort() {
-        var sortOption = document.getElementById("sort").value;
-        window.location.href = window.location.pathname + "?answerPage=0&sort=" + sortOption;
-    }
+    var sortOption = document.getElementById("sort").value;
+    window.location.href = window.location.pathname + "?answerPage=0&sort=" + sortOption;
+}
 </script>
 </html>
