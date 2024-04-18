@@ -37,7 +37,9 @@ public class QuestionController {
         return "question_list";
     }
     @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, @RequestParam(value = "answerPage", defaultValue = "0") int answerPage, @RequestParam(value = "sort", defaultValue = "createDate") String sort, AnswerForm answerForm) {
+    public String detail(Model model, @PathVariable("id") Integer id,
+                         @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
+                         @RequestParam(value = "sort", defaultValue = "createDate") String sort, AnswerForm answerForm) {
         Question question = this.questionService.getQuestion(id);
         Page<Answer> answerPaging;
         if (sort.equals("votes")) {
