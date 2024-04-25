@@ -3,6 +3,7 @@ package com.mysite.sbb.answer;
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.user.SiteUser;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,27 +30,33 @@ public class AnswerService {
         return answer;
     }
 
+
     public Answer getAnswer(Integer id) {
-        Optional<Answer> answer = this.answerRepository.findById(id);
-        if (answer.isPresent()) {
-            return answer.get();
-        } else {
-            throw new DataNotFoundException("answer not found");
-        }
+        return answerRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Answer not found with ID: " + id));
     }
 
+    @Transactional
     public void modify(Answer answer, String content) {
         answer.setContent(content);
         answer.setModifyDate(LocalDateTime.now());
         this.answerRepository.save(answer);
     }
 
+    @Transactional
     public void delete(Answer answer) {
         this.answerRepository.delete(answer);
     }
 
+    @Transactional
     public void vote(Answer answer, SiteUser siteUser) {
         answer.getVoter().add(siteUser);
         this.answerRepository.save(answer);
     }
+
+    public Page<Answer> getAnswersByQuestion(Question question, Pageable pageable) {
+        return answerRepository.findByQuestion(question, pageable);
+    }
+
+
 }

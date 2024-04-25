@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -87,6 +88,25 @@ public class AnswerController {
         this.answerService.vote(answer, siteUser);
         return String.format("redirect:/question/detail/%s#answer_%s",
                 answer.getQuestion().getId(), answer.getId());
+    }
+//    @GetMapping("/detail/{id}")
+//    public String questionDetail(@PathVariable Integer id, Model model,
+//                                 @RequestParam(defaultValue = "0") int page,
+//                                 @RequestParam(defaultValue = "10") int size) {
+//        Question question = questionService.getQuestion(id);
+//        Page<Answer> answers = answerService.getAnswersByQuestion(question, PageRequest.of(page, size));
+//
+//        model.addAttribute("question", question);
+//        model.addAttribute("answers", answers);
+//
+//        return "question_detail";
+//    }
+    @GetMapping("/answers")
+    public String getAnswersForPage(@RequestParam(defaultValue = "0") int page, Model model) {
+    int pageSize = 10; // 페이지당 표시할 답변 수
+    Page<Answer> answerPage = answerService.getAnswers(PageRequest.of(page, pageSize));
+    model.addAttribute("answerPage", answerPage);
+    return "answers"; // answers.html 템플릿으로 이동
     }
     }
 
