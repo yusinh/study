@@ -3,14 +3,16 @@ package com.mysite.sbb.answer;
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.user.SiteUser;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -30,33 +32,44 @@ public class AnswerService {
         return answer;
     }
 
-
     public Answer getAnswer(Integer id) {
-        return answerRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Answer not found with ID: " + id));
+        Optional<Answer> answer = this.answerRepository.findById(id);
+        if (answer.isPresent()) {
+            return answer.get();
+        } else {
+            throw new DataNotFoundException("answer not found");
+        }
     }
 
-    @Transactional
     public void modify(Answer answer, String content) {
         answer.setContent(content);
         answer.setModifyDate(LocalDateTime.now());
         this.answerRepository.save(answer);
     }
 
-    @Transactional
     public void delete(Answer answer) {
         this.answerRepository.delete(answer);
     }
 
-    @Transactional
     public void vote(Answer answer, SiteUser siteUser) {
         answer.getVoter().add(siteUser);
         this.answerRepository.save(answer);
     }
 
-    public Page<Answer> getAnswersByQuestion(Question question, Pageable pageable) {
-        return answerRepository.findByQuestion(question, pageable);
+    public Page<Answer> getList(Question question, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("Voter"));
+        sorts.add(Sort.Order.asc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.answerRepository.findByQuestion(question, pageable);
+    }
+    public Page<Answer> getListSortedByVotes(Question question, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createDate"));
+        return answerRepository.findByQuestionSortedByVoterSize(question, pageable);
     }
 
-
+    public Page<Answer> getListSortedByCreateDate(Question question, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createDate"));
+        return answerRepository.findByQuestion(question, pageable);
+    }
 }

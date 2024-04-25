@@ -51,7 +51,7 @@ public class QuestionService {
             return question.get();
         }
         else {
-           throw new DataNotFoundException("question not found");
+            throw new DataNotFoundException("question not found");
         }
     }
     public void create(String subject, String content, SiteUser user) {

@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -17,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 
@@ -31,7 +31,7 @@ public class AnswerController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
-    public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult, Principal principal) {
+    public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult, Principal principal, RedirectAttributes re) {
         Question question = this.questionService.getQuestion(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
         if(bindingResult.hasErrors()) {
@@ -39,6 +39,8 @@ public class AnswerController {
             return "question_detail";
         }
         Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);
+        int page = question.getAnswerList().size() / 10;
+        re.addAttribute("answerPage", page);
         return String.format("redirect:/question/detail/%s#answer_%s",
                 answer.getQuestion().getId(), answer.getId());
     }
@@ -89,25 +91,4 @@ public class AnswerController {
         return String.format("redirect:/question/detail/%s#answer_%s",
                 answer.getQuestion().getId(), answer.getId());
     }
-//    @GetMapping("/detail/{id}")
-//    public String questionDetail(@PathVariable Integer id, Model model,
-//                                 @RequestParam(defaultValue = "0") int page,
-//                                 @RequestParam(defaultValue = "10") int size) {
-//        Question question = questionService.getQuestion(id);
-//        Page<Answer> answers = answerService.getAnswersByQuestion(question, PageRequest.of(page, size));
-//
-//        model.addAttribute("question", question);
-//        model.addAttribute("answers", answers);
-//
-//        return "question_detail";
-//    }
-    @GetMapping("/answers")
-    public String getAnswersForPage(@RequestParam(defaultValue = "0") int page, Model model) {
-    int pageSize = 10; // 페이지당 표시할 답변 수
-    Page<Answer> answerPage = answerService.getAnswers(PageRequest.of(page, pageSize));
-    model.addAttribute("answerPage", answerPage);
-    return "answers"; // answers.html 템플릿으로 이동
-    }
-    }
-
-
+}

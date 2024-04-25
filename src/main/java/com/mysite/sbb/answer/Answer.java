@@ -1,6 +1,7 @@
 package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.mysite.sbb.question.Question;
@@ -30,6 +31,6 @@ public class Answer {
 
     private LocalDateTime modifyDate;
 
-    @ManyToMany
-    Set<SiteUser> voter;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<SiteUser> voter = new HashSet<>();
 }
