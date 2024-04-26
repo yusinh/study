@@ -19,10 +19,11 @@ import lombok.RequiredArgsConstructor;
 public class UserSecurityService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    // 사용자명으로 비밀번호를 조회하여 리턴하는 메서드
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<SiteUser> _siteUser = this.userRepository.findByusername(username);
+        Optional<SiteUser> _siteUser = this.userRepository.findByUsername(username);
         if (_siteUser.isEmpty()) {
             throw new UsernameNotFoundException("사용자를 찾을수 없습니다.");
         }
@@ -35,5 +36,4 @@ public class UserSecurityService implements UserDetailsService {
         }
         return new User(siteUser.getUsername(), siteUser.getPassword(), authorities);
     }
-
 }

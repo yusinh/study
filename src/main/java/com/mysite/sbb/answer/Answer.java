@@ -2,11 +2,19 @@ package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.user.SiteUser;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,14 +31,14 @@ public class Answer {
 
     private LocalDateTime createDate;
 
-    @ManyToOne
+    private LocalDateTime modifyDate;
+
+    @ManyToOne // 부모 : question
     private Question question;
 
     @ManyToOne
     private SiteUser author;
 
-    private LocalDateTime modifyDate;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<SiteUser> voter = new HashSet<>();
+    @ManyToMany
+    private Set<SiteUser> voters = new LinkedHashSet<>();
 }
