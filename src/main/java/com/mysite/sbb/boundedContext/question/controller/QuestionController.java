@@ -2,7 +2,9 @@ package com.mysite.sbb.boundedContext.question.controller;
 
 import java.security.Principal;
 
+import com.mysite.sbb.boundedContext.answer.entity.Answer;
 import com.mysite.sbb.boundedContext.answer.form.AnswerForm;
+import com.mysite.sbb.boundedContext.answer.service.AnswerService;
 import com.mysite.sbb.boundedContext.question.entity.Question;
 import com.mysite.sbb.boundedContext.question.form.QuestionForm;
 import com.mysite.sbb.boundedContext.question.service.QuestionService;
@@ -14,11 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
@@ -30,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
+    private final AnswerService answerService;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value="page", defaultValue="0") int page
@@ -40,9 +39,11 @@ public class QuestionController {
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm, @RequestParam(defaultValue = "0") int page) {
         Question question = this.questionService.getQuestion(id);
+        Page<Answer> paging = answerService.getAnswerPage(question, page);
         model.addAttribute("question", question);
+        model.addAttribute("paging", paging);
         return "question/question_detail";
     }
 
@@ -86,18 +87,18 @@ public class QuestionController {
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+        questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
         return String.format("redirect:/question/detail/%s", id);
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/delete/{id}")
-    public String questionDelete(Principal principal, @PathVariable("id") Integer id) {
+    @DeleteMapping("/{id}")
+    public String questionDelete(Principal principal, @PathVariable Integer id) {
         Question question = questionService.getQuestion(id);
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
-        this.questionService.delete(question);
+        questionService.delete(question);
         return "redirect:/";
     }
 

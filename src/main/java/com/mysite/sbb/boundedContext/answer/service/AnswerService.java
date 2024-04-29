@@ -7,6 +7,9 @@ import com.mysite.sbb.boundedContext.answer.repository.AnswerRepository;
 import com.mysite.sbb.boundedContext.question.entity.Question;
 import com.mysite.sbb.base.exception.DataNotFoundException;
 import com.mysite.sbb.user.entity.SiteUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +57,11 @@ public class AnswerService {
     public void vote(Answer answer, SiteUser siteUser) {
         answer.getVoters().add(siteUser);
         answerRepository.save(answer);
+    }
+
+    public Page<Answer> getAnswerPage(Question question, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        return answerRepository.findAllByQuestion(question, pageable);
     }
 }
