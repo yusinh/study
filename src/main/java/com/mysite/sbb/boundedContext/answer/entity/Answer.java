@@ -1,15 +1,19 @@
 package com.mysite.sbb.boundedContext.answer.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.mysite.sbb.boundedContext.comment.entity.Comment;
 import com.mysite.sbb.boundedContext.question.entity.Question;
 import com.mysite.sbb.user.entity.SiteUser;
 import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -46,4 +50,8 @@ public class Answer {
 
     @ManyToMany
     private Set<SiteUser> voters = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "answer", cascade = {CascadeType.REMOVE})
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
 }

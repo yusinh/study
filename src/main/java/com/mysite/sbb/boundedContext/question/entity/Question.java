@@ -5,10 +5,12 @@ import java.util.*;
 
 
 import com.mysite.sbb.boundedContext.answer.entity.Answer;
+import com.mysite.sbb.boundedContext.comment.entity.Comment;
 import com.mysite.sbb.user.entity.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.data.annotation.CreatedDate;
@@ -51,4 +53,8 @@ public class Question {
 
     @ManyToMany
     private Set<SiteUser> voters = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.REMOVE})
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
 }
