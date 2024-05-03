@@ -24,4 +24,8 @@ public class SiteUser {
 
     @Column(unique = true)
     private String email;
+
+    public boolean isAdmin() {
+        return this.username.equals("admin");
+    }
 }

@@ -5,6 +5,8 @@ import java.security.Principal;
 import com.mysite.sbb.boundedContext.answer.entity.Answer;
 import com.mysite.sbb.boundedContext.answer.form.AnswerForm;
 import com.mysite.sbb.boundedContext.answer.service.AnswerService;
+import com.mysite.sbb.boundedContext.comment.entity.Comment;
+import com.mysite.sbb.boundedContext.comment.service.CommentService;
 import com.mysite.sbb.boundedContext.question.entity.Question;
 import com.mysite.sbb.boundedContext.question.form.QuestionForm;
 import com.mysite.sbb.boundedContext.question.service.QuestionService;
@@ -29,6 +31,7 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
     private final AnswerService answerService;
+    private final CommentService commentService;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value="page", defaultValue="0") int page
@@ -40,11 +43,15 @@ public class QuestionController {
 
     @GetMapping("/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
-                         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String sort) {
+                         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String sort, @RequestParam(defaultValue = "0") int commentPage) {
         Question question = this.questionService.getQuestion(id);
-        Page<Answer> paging = answerService.getAnswerPage(question, page, sort);
         model.addAttribute("question", question);
+        Page<Answer> paging = answerService.getAnswerPage(question, page, sort);
         model.addAttribute("paging", paging);
+
+        Page<Comment> commentPaging = commentService.getCommentPageByQuestion(commentPage, question);
+        model.addAttribute("questionCommentPaging", commentPaging);
+
         return "question/question_detail";
     }
 

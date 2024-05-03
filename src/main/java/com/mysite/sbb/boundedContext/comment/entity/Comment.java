@@ -4,10 +4,7 @@ import com.mysite.sbb.boundedContext.answer.entity.Answer;
 import com.mysite.sbb.boundedContext.question.entity.Question;
 import com.mysite.sbb.user.entity.SiteUser;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,11 +16,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuperBuilder
+@Builder(toBuilder = true)
 @Getter
-@Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,5 +78,4 @@ public class Comment {
         public boolean isDeleted() {
                 return this.deleted == true;
         }
-
 }
